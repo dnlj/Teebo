@@ -17,7 +17,6 @@ def messageProcessor_PING(client, message):
 
 
 def messageProcessor_MODE(client, message):
-	client.registered = True
 	client.onRegistered()
 
 

@@ -19,6 +19,7 @@ class Client:
 
 	def onRegistered(self):
 		if not self.registered:
+			self.registered = True
 			self.send("JOIN " + self.channel)
 			del self.channel
 	
