@@ -31,10 +31,11 @@ class Client:
 	def send(self, message):
 		print("SEND: " + message, end = self.eol)
 		self.sock.send(bytes(message + self.eol, "utf-8"))
-		
+
 	
 	def process(self, message):
+		print("RECV: " + str(message), end = self.eol)
+		
 		if message.command == "PING":
 			self.send("PONG :" + message.trailing)
 
-		print("RECV: " + str(message), end = self.eol)
