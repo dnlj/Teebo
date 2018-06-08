@@ -16,6 +16,11 @@ def messageProcessor_PING(client, message):
 	client.send("PONG :" + message.trailing)
 
 
+def messageProcessor_MODE(client, message):
+	client.registered = True
+	client.onRegistered()
+
+
 def main():
 	print("=== Teebo starting ===")
 
@@ -31,6 +36,7 @@ def main():
 		)
 	
 	client.setMessageProcessors("PING", messageProcessor_PING)
+	client.setMessageProcessors("MODE", messageProcessor_MODE)
 
 	while True:
 		client.run()

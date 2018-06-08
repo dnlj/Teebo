@@ -14,8 +14,13 @@ class Client:
 		self.sock.connect((ip, port))
 		self.send("USER " + nickname + " 0 * :" + nickname + "_real")
 		self.send("NICK " + nickname)
-		self.send("JOIN " + channel)
+		self.channel = channel
+		
 
+	def onRegistered(self):
+		if not self.registered:
+			self.send("JOIN " + self.channel)
+			del self.channel
 	
 	def run(self):
 		# Split into messages
