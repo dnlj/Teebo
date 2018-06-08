@@ -3,5 +3,9 @@
 	"port": 6667,
 	"pass": "abc123",
 	"user": "Teebo",
-	"channel": "#Test"
+	"channels": [
+		"#Test1",
+		"#Test2",
+		"#Test3"
+	]
 }

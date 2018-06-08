@@ -5,7 +5,7 @@ import Teebo
 class Client:
 	eol = "\x0D\x0A" # CR LF
 
-	def __init__(self, ip, port, nickname, channel):
+	def __init__(self, ip, port, nickname, channels):
 		self.data = ""
 		self.registered = False
 		self.processors = {}
@@ -14,7 +14,7 @@ class Client:
 		self.sock.connect((ip, port))
 		self.send("USER " + nickname + " 0 * :" + nickname + "_real")
 		self.send("NICK " + nickname)
-		self.channel = channel
+		self.channels = channels
 		
 		self.setMessageProcessors("PING", Client.__messageProcessor_PING)
 		self.setMessageProcessors("MODE", Client.__messageProcessor_MODE)
@@ -31,8 +31,8 @@ class Client:
 		
 	
 	def onRegistered(self):
-		self.send("JOIN " + self.channel)
-		del self.channel
+		for channel in self.channels:
+			self.send("JOIN " + channel)
 		
 	
 	def run(self):

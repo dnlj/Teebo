@@ -24,7 +24,7 @@ def main():
 			settings["host"],
 			settings["port"],
 			settings["user"],
-			settings["channel"]
+			settings["channels"]
 		)
 	
 	while True:
