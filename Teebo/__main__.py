@@ -27,6 +27,12 @@ def main():
 			settings["channel"]
 		)
 	
+	client.setMessageProcessors(
+		"PING",
+		lambda self, messsage:
+			self.send("PONG :" + messsage.trailing)
+	)
+	
 	while True:
 		client.run()
 

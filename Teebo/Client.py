@@ -7,6 +7,8 @@ class Client:
 
 	def __init__(self, ip, port, nickname, channel):
 		self.data = ""
+		self.registered = False
+		self.processors = {}
 
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.connect((ip, port))
@@ -32,10 +34,15 @@ class Client:
 		print("SEND: " + message, end = self.eol)
 		self.sock.send(bytes(message + self.eol, "utf-8"))
 
+
+	def setMessageProcessors(self, command, func):
+		self.processors[command] = func
+
 	
 	def process(self, message):
 		print("RECV: " + str(message), end = self.eol)
-		
-		if message.command == "PING":
-			self.send("PONG :" + message.trailing)
+
+		func = self.processors.get(message.command)
+		if func is not None:
+			func(self, message)
 
