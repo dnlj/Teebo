@@ -12,6 +12,9 @@ import Teebo
 # https://tools.ietf.org/html/rfc1459
 # https://tools.ietf.org/html/rfc2812
 
+def messageProcessor_PING(client, message):
+	client.send("PONG :" + message.trailing)
+
 
 def main():
 	print("=== Teebo starting ===")
@@ -27,12 +30,8 @@ def main():
 			settings["channel"]
 		)
 	
-	client.setMessageProcessors(
-		"PING",
-		lambda self, messsage:
-			self.send("PONG :" + messsage.trailing)
-	)
-	
+	client.setMessageProcessors("PING", messageProcessor_PING)
+
 	while True:
 		client.run()
 
