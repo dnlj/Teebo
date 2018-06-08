@@ -4,11 +4,13 @@ import Teebo
 
 class Client:
 	eol = "\x0D\x0A" # CR LF
-
+	
+	
 	def __init__(self, ip, port, nickname, channels):
 		self.data = ""
 		self.registered = False
 		self.processors = {}
+		self.commands = {}
 
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.connect((ip, port))
@@ -18,6 +20,7 @@ class Client:
 		
 		self.setMessageProcessors("PING", Client.__messageProcessor_PING)
 		self.setMessageProcessors("MODE", Client.__messageProcessor_MODE)
+		self.setMessageProcessors("PRIVMSG", Client.__messageProcessor_PRIVMSG)
 		
 	
 	def __messageProcessor_PING(self, message):
@@ -28,11 +31,24 @@ class Client:
 		if not self.registered:
 			self.onRegistered()
 			self.registered = True
+			
+	
+	def __messageProcessor_PRIVMSG(self, message):
+		data = message.trailing.split()
+		cmd = data.pop(0)
+		func = self.commands.get(cmd)
 		
+		if func is not None:
+			func(self, message.params[0], message.prefix, cmd, data)
+			
 	
 	def onRegistered(self):
 		for channel in self.channels:
 			self.send("JOIN " + channel)
+		
+	
+	def addCommand(self, cmd, func):
+		self.commands[cmd] = func
 		
 	
 	def run(self):
