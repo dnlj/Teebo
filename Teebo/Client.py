@@ -10,9 +10,9 @@ class Client:
 
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.connect((ip, port))
-		self.send("USER " + nickname + " 0 * :" + nickname + "_real" + self.eol)
-		self.send("NICK " + nickname + self.eol)
-		self.send("JOIN " + channel + self.eol)
+		self.send("USER " + nickname + " 0 * :" + nickname + "_real")
+		self.send("NICK " + nickname)
+		self.send("JOIN " + channel)
 
 	
 	def run(self):
@@ -29,7 +29,7 @@ class Client:
 			
 	
 	def send(self, str):
-		print("SEND: " + str)
+		print("SEND: " + str + self.eol)
 		self.sock.send(bytes(str + self.eol, "utf-8"))
 
 	
