@@ -28,13 +28,13 @@ class Client:
 			self.process(Teebo.Message(message))
 			
 	
-	def send(self, str):
-		print("SEND: " + str + self.eol)
-		self.sock.send(bytes(str + self.eol, "utf-8"))
-
+	def send(self, message):
+		print("SEND: " + message, end = self.eol)
+		self.sock.send(bytes(message + self.eol, "utf-8"))
+		
 	
 	def process(self, message):
 		if message.command == "PING":
 			self.send("PONG :" + message.trailing)
 
-		print("RECV: " + str(message))
+		print("RECV: " + str(message), end = self.eol)
