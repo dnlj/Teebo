@@ -1,9 +1,9 @@
 import sys
+import json
 import Teebo
 
 
 #TODO: PASS support
-#TODO: Load settings from json file
 
 
 ##############################################################################
@@ -15,7 +15,17 @@ import Teebo
 
 def main():
 	print("=== Teebo starting ===")
-	client = Teebo.Client("127.0.0.1", 6667, "Teebo", "#Test")
+
+	with open("settings.json") as settingsFile:
+		settings = json.load(settingsFile)
+
+		# TODO: User friendly error reporting for missing field
+		client = Teebo.Client(
+			settings["host"],
+			settings["port"],
+			settings["user"],
+			settings["channel"]
+		)
 	
 	while True:
 		client.run()
