@@ -16,12 +16,24 @@ class Client:
 		self.send("NICK " + nickname)
 		self.channel = channel
 		
-
-	def onRegistered(self):
+		self.setMessageProcessors("PING", Client.__messageProcessor_PING)
+		self.setMessageProcessors("MODE", Client.__messageProcessor_MODE)
+		
+	
+	def __messageProcessor_PING(self, message):
+		self.send("PONG :" + message.trailing)
+		
+	
+	def __messageProcessor_MODE(self, message):
 		if not self.registered:
+			self.onRegistered()
 			self.registered = True
-			self.send("JOIN " + self.channel)
-			del self.channel
+		
+	
+	def onRegistered(self):
+		self.send("JOIN " + self.channel)
+		del self.channel
+		
 	
 	def run(self):
 		# Split into messages
