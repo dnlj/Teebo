@@ -7,5 +7,15 @@
 		"#Test1",
 		"#Test2",
 		"#Test3"
+	],
+	"commands": [
+		{
+			"command": "!help",
+			"text": "This is the help message."
+		},
+		{
+			"command": "!test",
+			"text": "This is the test message."
+		}
 	]
 }

@@ -14,13 +14,16 @@ import Teebo
 
 
 def command_text(client, channel, user, cmd, cmdArgs):
-	client.send(
-		"PRIVMSG "
-		+ channel
-		+ " :Echo: \""
-		+ " ".join([cmd] + cmdArgs)
-		+ "\""
-	)
+	text = client.commandText.get(cmd)
+	
+	if text is not None:
+		client.send(
+			"PRIVMSG "
+			+ channel
+			+ " :"
+			+ text
+		)
+		
 
 def main():
 	print("=== Teebo starting ===")
@@ -36,7 +39,12 @@ def main():
 		settings["channels"]
 	)
 	
-	client.addCommand("!help", command_text)
+	client.commandText = {}
+	
+	for cmd in settings["commands"]:
+		client.commandText[cmd["command"]] = cmd["text"]
+		client.addCommand(cmd["command"], command_text)
+	
 	
 	while True:
 		client.run()
