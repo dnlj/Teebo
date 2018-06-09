@@ -1,5 +1,6 @@
 import socket
 import Teebo
+import shlex
 
 
 class Client:
@@ -34,7 +35,7 @@ class Client:
 			
 	
 	def __messageProcessor_PRIVMSG(self, message):
-		data = message.trailing.split()
+		data = shlex.split(message.trailing)
 		cmd = data.pop(0)
 		func = self.commands.get(cmd)
 		
