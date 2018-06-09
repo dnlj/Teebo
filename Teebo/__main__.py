@@ -28,9 +28,11 @@ def command_text(client, channel, user, cmd, cmdArgs):
 def main():
 	print("=== Teebo starting ===")
 	
+	# Load settings
 	with open("settings.json") as settingsFile:
 		settings = json.load(settingsFile)
-
+	
+	# Create bot
 	# TODO: User friendly error reporting for missing field
 	client = Teebo.Client(
 		settings["host"],
@@ -39,13 +41,14 @@ def main():
 		settings["channels"]
 	)
 	
+	# Load commands
 	client.commandText = {}
 	
 	for cmd in settings["commands"]:
 		client.commandText[cmd["command"]] = cmd["text"]
 		client.addCommand(cmd["command"], command_text)
 	
-	
+	# Run the bot
 	while True:
 		client.run()
 	
