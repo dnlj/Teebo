@@ -52,7 +52,8 @@ def main():
 	while True:
 		client.run()
 	
-	print("Done.")
+	# Cleanup
+	client.close()
 	
 
 if __name__ == "__main__":

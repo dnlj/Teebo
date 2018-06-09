@@ -13,7 +13,7 @@ class Client:
 		self.registered = False
 		self.processors = {}
 		self.commands = {}
-
+		
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.connect((ip, port))
 		self.send("USER " + nickname + " 0 * :" + nickname + "_real")
@@ -24,6 +24,18 @@ class Client:
 		self.setMessageProcessors("MODE", Client.__messageProcessor_MODE)
 		self.setMessageProcessors("PRIVMSG", Client.__messageProcessor_PRIVMSG)
 		
+	
+	def __enter__(self):
+		return self
+		
+	
+	def __exit__(self, exc_type, exc_value, traceback):
+		self.close()
+		
+	
+	def close(self):
+		self.sock.shutdown(socket.SHUT_RDWR)
+		self.sock.close()
 	
 	def __messageProcessor_PING(self, message):
 		self.send("PONG :" + message.trailing)
