@@ -1,6 +1,7 @@
 import socket
 import Teebo
 import shlex
+import traceback
 
 
 class Client:
@@ -79,5 +80,9 @@ class Client:
 
 		func = self.processors.get(message.command)
 		if func is not None:
-			func(self, message)
-
+			try:
+				func(self, message)
+			except:
+				print("ERROR: Exception thrown in the function for command: " + message.command)
+				traceback.print_exc()
+				
