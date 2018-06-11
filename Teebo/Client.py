@@ -14,12 +14,14 @@ class Client:
 		self.processors = {}
 		self.commands = {}
 		
+		# Create our connection
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.connect((ip, port))
 		self.send("USER " + nickname + " 0 * :" + nickname + "_real")
 		self.send("NICK " + nickname)
 		self.channels = channels
 		
+		# Setup processors
 		self.setMessageProcessors("PING", Client.__messageProcessor_PING)
 		self.setMessageProcessors("MODE", Client.__messageProcessor_MODE)
 		self.setMessageProcessors("PRIVMSG", Client.__messageProcessor_PRIVMSG)
@@ -53,11 +55,13 @@ class Client:
 		cmdData = self.commands.get(cmd)
 		resp = None
 		
+		# Run the command if it exists
 		if cmdData is not None:
 			channel = message.params[0]
 			user = message.prefix[1:]
 			resp = cmdData["func"](self, channel, user, cmd, data)
-			
+		
+		# Send a response
 		if resp:
 			self.send("PRIVMSG " + channel + " :" + str(resp))
 	
@@ -97,7 +101,8 @@ class Client:
 	
 	def process(self, message):
 		print("RECV: " + str(message), end = self.eol)
-
+		
+		# Handle the command
 		func = self.processors.get(message.command)
 		if func is not None:
 			try:
