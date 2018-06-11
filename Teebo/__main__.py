@@ -15,16 +15,8 @@ import random
 
 
 def command_text(client, channel, user, cmd, args):
-	text = client.commandText.get(cmd)
-	
-	if text is not None:
-		client.send(
-			"PRIVMSG "
-			+ channel
-			+ " :"
-			+ text
-		)
-		
+	return client.commandText.get(cmd)
+
 
 def command_roll(client, channel, user, cmd, args):
 	if not args:
