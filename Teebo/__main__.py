@@ -1,6 +1,7 @@
 import sys
 import json
 import Teebo
+import random
 
 
 #TODO: PASS support
@@ -13,7 +14,7 @@ import Teebo
 # https://tools.ietf.org/html/rfc2812
 
 
-def command_text(client, channel, user, cmd, cmdArgs):
+def command_text(client, channel, user, cmd, args):
 	text = client.commandText.get(cmd)
 	
 	if text is not None:
@@ -24,6 +25,29 @@ def command_text(client, channel, user, cmd, cmdArgs):
 			+ text
 		)
 		
+
+def command_roll(client, channel, user, cmd, args):
+	if not args:
+		return
+	
+	parts = args[0].split("d")
+	
+	if len(parts) == 2:
+		count = parts[0]
+		sides = parts[1]
+		
+		if count.isdigit() and sides.isdigit():
+			count = int(count)
+			sides = int(sides)
+			total = 0
+			
+			for _ in range(0, count):
+				total += random.randint(1, sides)
+				
+			return "@" + user + " - " + str(total)
+
+	return "@" + user + " - Invalid input for command \"" + cmd + "\""
+
 
 def main():
 	print("=== Teebo starting ===")
@@ -47,6 +71,8 @@ def main():
 	for cmd in settings["commands"]:
 		client.commandText[cmd["command"]] = cmd["text"]
 		client.addCommand(cmd["command"], command_text)
+	
+	client.addCommand("!roll", command_roll)
 	
 	# Run the bot
 	while True:
