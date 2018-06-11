@@ -74,7 +74,7 @@ def main():
 		client.commandText[cmd["command"]] = cmd["text"]
 		client.addCommand(cmd["command"], command_text, "Text command.")
 	
-	client.addCommand("!roll", command_roll, " NdS - Roll N S sided dice. Ex: 3d6")
+	client.addCommand("!roll", command_roll, "Rolls N S sided dice. Ex: !roll 3d6")
 	client.addCommand("!help", command_help, "Gets the help text for a command. Ex: !help !roll")
 	
 	# Run the bot
