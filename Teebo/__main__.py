@@ -31,12 +31,14 @@ def command_roll(client, channel, user, cmd, args):
 		if count.isdigit() and sides.isdigit():
 			count = int(count)
 			sides = int(sides)
-			total = 0
 			
-			for _ in range(0, count):
-				total += random.randint(1, sides)
+			if count <= 100 and sides <= 1000:
+				total = 0
 				
-			return "@" + user + " - " + str(total)
+				for _ in range(0, count):
+					total += random.randint(1, sides)
+				
+				return "@" + user + " - " + str(total)
 
 	return "@" + user + " - Invalid input for command \"" + cmd + "\""
 
