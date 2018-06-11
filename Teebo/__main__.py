@@ -43,6 +43,14 @@ def command_roll(client, channel, user, cmd, args):
 	return "@" + user + " - Invalid input for command \"" + cmd + "\""
 
 
+def command_help(client, channel, user, cmd, args):
+	if len(args) != 1: return
+	
+	cmdData = client.commands.get(args[0])
+	if cmdData is not None:
+		return args[0] + " - " +cmdData["help"]
+	
+
 def main():
 	print("=== Teebo starting ===")
 	
@@ -67,6 +75,7 @@ def main():
 		client.addCommand(cmd["command"], command_text, "Text command.")
 	
 	client.addCommand("!roll", command_roll, " NdS - Roll N S sided dice. Ex: 3d6")
+	client.addCommand("!help", command_help, "Gets the help text for a command. Ex: !help !roll")
 	
 	# Run the bot
 	while True:

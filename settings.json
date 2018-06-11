@@ -10,8 +10,8 @@
 	],
 	"commands": [
 		{
-			"command": "!help",
-			"text": "This is the help message."
+			"command": "!foo",
+			"text": "This is the foo message."
 		},
 		{
 			"command": "!test",
