@@ -51,10 +51,15 @@ class Client:
 		data = shlex.split(message.trailing)
 		cmd = data.pop(0)
 		func = self.commands.get(cmd)
+		resp = None
 		
 		if func is not None:
-			func(self, message.params[0], message.prefix, cmd, data)
+			channel = message.params[0]
+			user = message.prefix[1:]
+			resp = func(self, channel, user, cmd, data)
 			
+		if resp:
+			self.send("PRIVMSG " + channel + " :" + str(resp))
 	
 	def onRegistered(self):
 		for channel in self.channels:
