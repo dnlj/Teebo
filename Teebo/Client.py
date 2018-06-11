@@ -50,13 +50,13 @@ class Client:
 	def __messageProcessor_PRIVMSG(self, message):
 		data = shlex.split(message.trailing)
 		cmd = data.pop(0)
-		func = self.commands.get(cmd)
+		cmdData = self.commands.get(cmd)
 		resp = None
 		
-		if func is not None:
+		if cmdData is not None:
 			channel = message.params[0]
 			user = message.prefix[1:]
-			resp = func(self, channel, user, cmd, data)
+			resp = cmdData["func"](self, channel, user, cmd, data)
 			
 		if resp:
 			self.send("PRIVMSG " + channel + " :" + str(resp))
@@ -66,8 +66,11 @@ class Client:
 			self.send("JOIN " + channel)
 		
 	
-	def addCommand(self, cmd, func):
-		self.commands[cmd] = func
+	def addCommand(self, cmd, func, helpText):
+		self.commands[cmd] = {
+			"func": func,
+			"help": helpText
+		}
 		
 	
 	def run(self):

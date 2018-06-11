@@ -64,9 +64,9 @@ def main():
 	
 	for cmd in settings["commands"]:
 		client.commandText[cmd["command"]] = cmd["text"]
-		client.addCommand(cmd["command"], command_text)
+		client.addCommand(cmd["command"], command_text, "Text command.")
 	
-	client.addCommand("!roll", command_roll)
+	client.addCommand("!roll", command_roll, " NdS - Roll N S sided dice. Ex: 3d6")
 	
 	# Run the bot
 	while True:
