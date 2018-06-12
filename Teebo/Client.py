@@ -2,6 +2,7 @@ import socket
 import Teebo
 import shlex
 import traceback
+import time
 
 
 class Client:
@@ -13,6 +14,9 @@ class Client:
 		self.registered = False
 		self.processors = {}
 		self.commands = {}
+		self.maxMessagesPerSecond = 20
+		self.sentMessageCount = 0
+		self.messageTime = time.perf_counter()
 		
 		# Create our connection
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -90,8 +94,23 @@ class Client:
 			self.process(Teebo.Message(message))
 			
 	
+	def updateMessageTime(self):
+		curTime = time.perf_counter()
+		if (curTime - self.messageTime) >= 1.0:
+			self.messageTime = curTime
+			self.sentMessageCount = 0
+	
+	
 	def send(self, message):
+		# Wait until we can send a message
+		self.updateMessageTime()
+		
+		while self.sentMessageCount >= self.maxMessagesPerSecond:
+			time.sleep((1 + self.messageTime) - time.perf_counter())
+			self.updateMessageTime()
+		
 		print("SEND: " + message, end = self.eol)
+		self.sentMessageCount += 1
 		self.sock.send(bytes(message + self.eol, "utf-8"))
 
 
