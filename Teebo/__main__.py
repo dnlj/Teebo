@@ -49,7 +49,7 @@ def command_help(client, channel, user, cmd, args):
 	cmdData = client.commands.get(args[0])
 	if cmdData is not None:
 		return args[0] + " - " +cmdData["help"]
-	
+
 
 def main():
 	print("=== Teebo starting ===")
@@ -77,11 +77,16 @@ def main():
 	client.addCommand("!roll", command_roll, "Rolls N S sided dice. Ex: !roll 3d6")
 	client.addCommand("!help", command_help, "Gets the help text for a command. Ex: !help !roll")
 	
+	# Create the points thread
+	pointsThread = Teebo.PointsThread()
+	pointsThread.start()
+	
 	# Run the bot
 	while True:
 		client.run()
 	
 	# Cleanup
+	pointsThread.join()
 	client.close()
 	
 
