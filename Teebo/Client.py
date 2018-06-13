@@ -108,17 +108,6 @@ class Client:
 		return userList
 		
 	
-	def getUserList(self):
-		userList = []
-		
-		if self.twitch:
-			for chan in self.channels:
-				userList += self.getUserListForChannel(chan)
-				
-		
-		return userList
-		
-	
 	def run(self):
 		# Split into messages
 		self.data += self.sock.recv(1024).decode("utf-8")

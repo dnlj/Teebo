@@ -16,10 +16,16 @@ class PointsThread(threading.Thread):
 			return
 		
 		self.pointsTime = time.perf_counter()
-		userList = self.client.getUserList()
 		
-		if not userList: return
+		for chan in self.client.channels:
+			self.updatePointsForChannel(chan)
 	
+	
+	def updatePointsForChannel(self, channel):
+		userList = self.client.getUserListForChannel(channel)
+		if not userList: return
+		# TODO: points
+		
 	
 	def run(self):
 		while True:
