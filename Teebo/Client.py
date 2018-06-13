@@ -3,6 +3,8 @@ import Teebo
 import shlex
 import traceback
 import time
+import urllib.request
+import json
 
 
 class Client:
@@ -17,6 +19,7 @@ class Client:
 		self.maxMessagesPerSecond = 20
 		self.sentMessageCount = 0
 		self.messageTime = time.perf_counter()
+		self.twitch = True
 		
 		# Create our connection
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,7 +34,7 @@ class Client:
 		self.setMessageProcessors("PRIVMSG", Client.__messageProcessor_PRIVMSG)
 		
 		# Points thread
-		self.pointsThread = Teebo.PointsThread()
+		self.pointsThread = Teebo.PointsThread(self)
 		self.pointsThread.start()
 		
 	
@@ -84,6 +87,36 @@ class Client:
 			"func": func,
 			"help": helpText
 		}
+		
+	
+	def getUserListForChannel(self, channel):
+		userList = []
+		
+		if self.twitch:
+			# TODO: http://tmi.twitch.tv/group/user/CHANNEL/chatters
+			with urllib.request.urlopen("https://jsonplaceholder.typicode.com/users") as con:
+				data = json.loads(con.read())
+				
+			for user in data:
+				name = user.get("name")
+				if name is not None:
+					userList.append(name)
+		else:
+			# TODO: Normal IRC support. Look into NAMES command.
+			pass
+		
+		return userList
+		
+	
+	def getUserList(self):
+		userList = []
+		
+		if self.twitch:
+			for chan in self.channels:
+				userList += self.getUserListForChannel(chan)
+				
+		
+		return userList
 		
 	
 	def run(self):
