@@ -11,7 +11,7 @@ class Client:
 	eol = "\x0D\x0A" # CR LF
 	
 	
-	def __init__(self, ip, port, nickname, channels):
+	def __init__(self, ip, port, nickname, password, channels):
 		self.data = ""
 		self.registered = False
 		self.processors = {}
@@ -24,8 +24,11 @@ class Client:
 		# Create our connection
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.connect((ip, port))
+		
+		if password: self.send("PASS " + password)
 		self.send("USER " + nickname + " 0 * :" + nickname + "_real")
 		self.send("NICK " + nickname)
+		
 		self.channels = channels
 		
 		# Setup processors
@@ -93,14 +96,14 @@ class Client:
 		userList = []
 		
 		if self.twitch:
-			# TODO: http://tmi.twitch.tv/group/user/CHANNEL/chatters
-			with urllib.request.urlopen("https://jsonplaceholder.typicode.com/users") as con:
-				data = json.loads(con.read())
-				
-			for user in data:
-				name = user.get("name")
-				if name is not None:
-					userList.append(name)
+			with urllib.request.urlopen("http://tmi.twitch.tv/group/user/" + channel[1:] + "/chatters") as con:
+				data = json.loads(con.read())["chatters"]
+			
+			for user in data["moderators"]: userList.append(user)
+			for user in data["staff"]: userList.append(user)
+			for user in data["admins"]: userList.append(user)
+			for user in data["global_mods"]: userList.append(user)
+			for user in data["viewers"]: userList.append(user)
 		else:
 			# TODO: Normal IRC support. Look into NAMES command.
 			pass

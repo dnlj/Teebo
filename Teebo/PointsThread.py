@@ -7,7 +7,7 @@ class PointsThread(threading.Thread):
 		super().__init__()
 		
 		self.pointsTime = time.perf_counter()
-		self.pointsInterval = 10
+		self.pointsInterval = 5 * 60
 		self.client = client
 	
 	
