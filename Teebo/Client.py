@@ -30,6 +30,10 @@ class Client:
 		self.setMessageProcessors("MODE", Client.__messageProcessor_MODE)
 		self.setMessageProcessors("PRIVMSG", Client.__messageProcessor_PRIVMSG)
 		
+		# Points thread
+		self.pointsThread = Teebo.PointsThread()
+		self.pointsThread.start()
+		
 	
 	def __enter__(self):
 		return self
@@ -42,6 +46,7 @@ class Client:
 	def close(self):
 		self.sock.shutdown(socket.SHUT_RDWR)
 		self.sock.close()
+		self.pointsThread.join()
 	
 	def __messageProcessor_PING(self, message):
 		self.send("PONG :" + message.trailing)

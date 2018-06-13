@@ -13,7 +13,7 @@ class PointsThread(threading.Thread):
 	
 	
 	def updatePoints(self):
-		if (time.perf_counter() - self.pointsTime) < self.pointsInterval:
+		if (self.pointsInterval + self.pointsTime) - time.perf_counter() > 0:
 			return
 		
 		self.pointsTime = time.perf_counter()
@@ -33,10 +33,10 @@ class PointsThread(threading.Thread):
 			pass
 		
 		print("Points done.")
-	
+		
 	
 	def run(self):
 		while True:
 			self.updatePoints()
-			time.sleep((self.pointsInterval + self.pointsTime) - time.perf_counter())
+			time.sleep(max((self.pointsInterval + self.pointsTime) - time.perf_counter(), 0))
 	
