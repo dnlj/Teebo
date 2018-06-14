@@ -55,7 +55,7 @@ def main():
 	print("=== Teebo starting ===")
 	
 	# Load settings
-	with open("../teebo_settings.json") as settingsFile:
+	with open("./settings.json") as settingsFile:
 		settings = json.load(settingsFile)
 	
 	# Create bot
@@ -63,6 +63,7 @@ def main():
 	client = Teebo.Client(
 		settings["host"],
 		settings["port"],
+		settings["type"],
 		settings["user"],
 		settings["pass"],
 		settings["channels"]

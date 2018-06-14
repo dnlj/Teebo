@@ -11,7 +11,7 @@ class Client:
 	eol = "\x0D\x0A" # CR LF
 	
 	
-	def __init__(self, ip, port, nickname, password, channels):
+	def __init__(self, ip, port, hostType, nickname, password, channels):
 		self.data = ""
 		self.registered = False
 		self.processors = {}
@@ -19,7 +19,7 @@ class Client:
 		self.maxMessagesPerSecond = 20
 		self.sentMessageCount = 0
 		self.messageTime = time.perf_counter()
-		self.twitch = True
+		self.hostType = Teebo.HostType[hostType.upper()]
 		
 		# Create our connection
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -95,7 +95,10 @@ class Client:
 	def getUserListForChannel(self, channel):
 		userList = []
 		
-		if self.twitch:
+		if self.hostType == Teebo.HostType.IRC:
+			# TODO: Normal IRC support. Look into NAMES command.
+			pass
+		elif self.hostType == Teebo.HostType.TWITCH:
 			with urllib.request.urlopen("http://tmi.twitch.tv/group/user/" + channel[1:] + "/chatters") as con:
 				data = json.loads(con.read())["chatters"]
 			
@@ -104,9 +107,6 @@ class Client:
 			for user in data["admins"]: userList.append(user)
 			for user in data["global_mods"]: userList.append(user)
 			for user in data["viewers"]: userList.append(user)
-		else:
-			# TODO: Normal IRC support. Look into NAMES command.
-			pass
 		
 		return userList
 		

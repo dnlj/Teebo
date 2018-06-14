@@ -3,6 +3,7 @@
 	"port": 6667,
 	"pass": "abc123",
 	"user": "Teebo",
+	"type": "irc",
 	"channels": [
 		"#Test1",
 		"#Test2",

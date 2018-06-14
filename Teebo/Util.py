@@ -1,4 +1,5 @@
 import re
+import enum
 
 def getInfoFromPrefix(prefix):
 	# SEE: https://tools.ietf.org/html/rfc2812#section-2.3.1
@@ -14,3 +15,8 @@ def getInfoFromPrefix(prefix):
 		
 	return ret
 
+
+class HostType(enum.Enum):
+	IRC = 0
+	TWITCH = 1
+	
