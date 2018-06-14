@@ -73,7 +73,7 @@ class Client:
 		# Run the command if it exists
 		if cmdData is not None:
 			channel = message.params[0]
-			user = message.prefix[1:]
+			user = Teebo.getInfoFromPrefix(message.prefix)["nick"]
 			resp = cmdData["func"](self, channel, user, cmd, data)
 		
 		# Send a response
