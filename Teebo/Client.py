@@ -33,7 +33,7 @@ class Client:
 		
 		# Setup processors
 		self.setMessageProcessors("PING", Client.__messageProcessor_PING)
-		self.setMessageProcessors("MODE", Client.__messageProcessor_MODE)
+		self.setMessageProcessors("001", Client.__messageProcessor_RPL_WELCOME)
 		self.setMessageProcessors("PRIVMSG", Client.__messageProcessor_PRIVMSG)
 		
 		# Points thread
@@ -58,7 +58,7 @@ class Client:
 		self.send("PONG :" + message.trailing)
 		
 	
-	def __messageProcessor_MODE(self, message):
+	def __messageProcessor_RPL_WELCOME(self, message):
 		if not self.registered:
 			self.onRegistered()
 			self.registered = True
