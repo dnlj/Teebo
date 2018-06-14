@@ -3,16 +3,17 @@ import time
 
 
 class PointsThread(threading.Thread):
-	def __init__(self, client):
+	def __init__(self, client, pointAmount, pointInterval):
 		super().__init__()
 		
-		self.pointsTime = time.perf_counter()
-		self.pointsInterval = 5 * 60
+		self.pointTime = time.perf_counter()
+		self.pointInterval = pointInterval
+		self.pointAmount = pointAmount
 		self.client = client
 	
 	
 	def updatePoints(self):
-		if (self.pointsInterval + self.pointsTime) - time.perf_counter() > 0:
+		if (self.pointInterval + self.pointTime) - time.perf_counter() > 0:
 			return
 		
 		self.pointsTime = time.perf_counter()
@@ -30,5 +31,5 @@ class PointsThread(threading.Thread):
 	def run(self):
 		while True:
 			self.updatePoints()
-			time.sleep(max((self.pointsInterval + self.pointsTime) - time.perf_counter(), 0))
+			time.sleep(max((self.pointInterval + self.pointTime) - time.perf_counter(), 0))
 	

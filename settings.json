@@ -4,10 +4,11 @@
 	"pass": "abc123",
 	"user": "Teebo_Bot",
 	"type": "irc",
+	"pointAmount": 10,
+	"pointInterval": 600,
 	"channels": [
 		"#Test1",
-		"#Test2",
-		"#Test3"
+		"#Test2"
 	],
 	"commands": [
 		{

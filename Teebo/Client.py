@@ -39,7 +39,7 @@ class Client:
 		self.setMessageProcessors("PRIVMSG", Client.__messageProcessor_PRIVMSG)
 		
 		# Points thread
-		self.pointsThread = Teebo.PointsThread(self)
+		self.pointsThread = Teebo.PointsThread(self, settings["pointAmount"], settings["pointInterval"])
 		self.pointsThread.start()
 		
 	
