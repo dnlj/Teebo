@@ -60,14 +60,7 @@ def main():
 	
 	# Create bot
 	# TODO: User friendly error reporting for missing field
-	client = Teebo.Client(
-		settings["host"],
-		settings["port"],
-		settings["type"],
-		settings["user"],
-		settings["pass"],
-		settings["channels"]
-	)
+	client = Teebo.Client(settings)
 	
 	# Load commands
 	client.commandText = {}

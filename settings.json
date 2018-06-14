@@ -2,7 +2,7 @@
 	"host": "127.0.0.1",
 	"port": 6667,
 	"pass": "abc123",
-	"user": "Teebo",
+	"user": "Teebo_Bot",
 	"type": "irc",
 	"channels": [
 		"#Test1",

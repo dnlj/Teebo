@@ -11,7 +11,7 @@ class Client:
 	eol = "\x0D\x0A" # CR LF
 	
 	
-	def __init__(self, ip, port, hostType, nickname, password, channels):
+	def __init__(self, settings):
 		self.data = ""
 		self.registered = False
 		self.processors = {}
@@ -19,17 +19,19 @@ class Client:
 		self.maxMessagesPerSecond = 20
 		self.sentMessageCount = 0
 		self.messageTime = time.perf_counter()
-		self.hostType = Teebo.HostType[hostType.upper()]
+		self.hostType = Teebo.HostType[settings["type"].upper()]
 		
 		# Create our connection
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.sock.connect((ip, port))
+		self.sock.connect((settings["host"], settings["port"]))
 		
+		nickname = settings["user"]
+		password = settings["pass"]
 		if password: self.send("PASS " + password)
 		self.send("USER " + nickname + " 0 * :" + nickname + "_real")
 		self.send("NICK " + nickname)
 		
-		self.channels = channels
+		self.channels = settings["channels"]
 		
 		# Setup processors
 		self.setMessageProcessors("PING", Client.__messageProcessor_PING)
