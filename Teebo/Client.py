@@ -154,7 +154,7 @@ class Client:
 		
 		print("SEND: " + message, end = self.eol)
 		self.sentMessageCount += 1
-		self.sock.send(bytes(message + self.eol, "utf-8"))
+		self.sock.sendall(bytes(message + self.eol, "utf-8"))
 
 
 	def setMessageProcessors(self, command, func):
