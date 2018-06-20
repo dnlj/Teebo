@@ -5,7 +5,7 @@
 	"user": "Teebo_Bot",
 	"type": "irc",
 	"pointAmount": 10,
-	"pointInterval": 600,
+	"pointInterval": 10,
 	"channels": [
 		"#Test1",
 		"#Test2"

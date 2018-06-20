@@ -37,6 +37,8 @@ class Client:
 		self.setMessageProcessors("PING", Client.__messageProcessor_PING)
 		self.setMessageProcessors("001", Client.__messageProcessor_RPL_WELCOME)
 		self.setMessageProcessors("PRIVMSG", Client.__messageProcessor_PRIVMSG)
+		self.setMessageProcessors("353", Client.__messageProcessor_RPL_NAMES)
+		self.setMessageProcessors("366", Client.__messageProcessor_RPL_ENDOFNAMES)
 		
 		# Points thread
 		self.pointsThread = Teebo.PointsThread(self, settings["pointAmount"], settings["pointInterval"])
@@ -81,6 +83,15 @@ class Client:
 		# Send a response
 		if resp:
 			self.send("PRIVMSG " + channel + " :" + str(resp))
+			
+	
+	def __messageProcessor_RPL_NAMES(self, message):
+		pass
+		
+	
+	def __messageProcessor_RPL_ENDOFNAMES(self, message):
+		pass
+	
 	
 	def onRegistered(self):
 		for channel in self.channels:
