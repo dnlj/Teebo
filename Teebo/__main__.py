@@ -73,8 +73,7 @@ def main():
 	client.addCommand("!help", command_help, "Gets the help text for a command. Ex: !help !roll")
 	
 	# Run the bot
-	while True:
-		client.run()
+	client.run()
 	
 	# Cleanup
 	client.close()

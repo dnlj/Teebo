@@ -8,9 +8,6 @@ import json
 
 
 class Client:
-	eol = "\x0D\x0A" # CR LF
-	
-	
 	def __init__(self, settings):
 		self.data = ""
 		self.registered = False
@@ -43,6 +40,10 @@ class Client:
 		# Points thread
 		self.pointsThread = Teebo.PointsThread(self, settings["pointAmount"], settings["pointInterval"])
 		self.pointsThread.start()
+		
+		# Receiver thread
+		self.receiverThread = Teebo.ReceiverThread(self.sock)
+		self.receiverThread.start()
 		
 	
 	def __enter__(self):
@@ -125,16 +126,8 @@ class Client:
 		
 	
 	def run(self):
-		# Split into messages
-		self.data += self.sock.recv(1024).decode("utf-8")
-		messages = self.data.split(self.eol)
-
-		# Handler partial messages
-		self.data = messages.pop()
-
-		# Process messages
-		for message in messages:
-			self.process(Teebo.Message(message))
+		while True:
+			self.process(self.receiverThread.queue.get())
 			
 	
 	def updateMessageTime(self):
@@ -152,9 +145,9 @@ class Client:
 			time.sleep((1 + self.messageTime) - time.perf_counter())
 			self.updateMessageTime()
 		
-		print("SEND: " + message, end = self.eol)
+		print("SEND: " + message, end = Teebo.eol)
 		self.sentMessageCount += 1
-		self.sock.sendall(bytes(message + self.eol, "utf-8"))
+		self.sock.sendall(bytes(message + Teebo.eol, "utf-8"))
 
 
 	def setMessageProcessors(self, command, func):
@@ -162,7 +155,7 @@ class Client:
 
 	
 	def process(self, message):
-		print("RECV: " + str(message), end = self.eol)
+		print("RECV: " + str(message), end = Teebo.eol)
 		
 		# Handle the command
 		func = self.processors.get(message.command)

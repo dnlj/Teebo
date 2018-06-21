@@ -1,6 +1,10 @@
 import re
 import enum
 
+
+eol = "\x0D\x0A" # CR LF
+
+
 def getInfoFromPrefix(prefix):
 	# SEE: https://tools.ietf.org/html/rfc2812#section-2.3.1
 	data = re.split("^:|!|@", prefix)
