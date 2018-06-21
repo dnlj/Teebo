@@ -52,7 +52,7 @@ def command_help(client, channel, user, cmd, args):
 
 
 def main():
-	print("=== Teebo starting ===")
+	Teebo.log("=== Teebo starting ===")
 	
 	# Load settings
 	with open("./settings.json") as settingsFile:

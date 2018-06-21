@@ -32,7 +32,7 @@ class SendThread(threading.Thread):
 		
 		message = self.queue.get()
 		
-		print("SEND: " + message, end = Teebo.eol)
+		Teebo.log("SEND: " + message, end = Teebo.eol)
 		self.sentMessageCount += 1
 		self.sock.sendall(bytes(message + Teebo.eol, "utf-8"))
 		

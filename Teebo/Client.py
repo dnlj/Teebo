@@ -143,7 +143,7 @@ class Client:
 
 	
 	def process(self, message):
-		print("RECV: " + str(message), end = Teebo.eol)
+		Teebo.log("RECV: " + str(message), end = Teebo.eol)
 		
 		# Handle the command
 		func = self.processors.get(message.command)
@@ -151,6 +151,6 @@ class Client:
 			try:
 				func(self, message)
 			except:
-				print("ERROR: Exception thrown in the function for command: " + message.command)
+				Teebo.log("ERROR: Exception thrown in the function for command: " + message.command)
 				traceback.print_exc()
 				

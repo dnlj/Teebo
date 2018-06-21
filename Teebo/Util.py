@@ -1,9 +1,17 @@
 import re
 import enum
+import threading
 
 
 eol = "\x0D\x0A" # CR LF
+_logLock = threading.Lock()
 
+
+def log(*args, **kwargs):
+	_logLock.acquire()
+	print(*args, **kwargs)
+	_logLock.release()
+	
 
 def getInfoFromPrefix(prefix):
 	# SEE: https://tools.ietf.org/html/rfc2812#section-2.3.1
