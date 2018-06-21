@@ -22,14 +22,6 @@ class Client:
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.sock.connect((settings["host"], settings["port"]))
 		
-		nickname = settings["user"]
-		password = settings["pass"]
-		if password: self.send("PASS " + password)
-		self.send("USER " + nickname + " 0 * :" + nickname + "_real")
-		self.send("NICK " + nickname)
-		
-		self.channels = settings["channels"]
-		
 		# Setup processors
 		self.setMessageProcessors("PING", Client.__messageProcessor_PING)
 		self.setMessageProcessors("001", Client.__messageProcessor_RPL_WELCOME)
@@ -44,6 +36,18 @@ class Client:
 		# Receiver thread
 		self.receiverThread = Teebo.ReceiverThread(self.sock)
 		self.receiverThread.start()
+		
+		# Send thread
+		self.sendThread = Teebo.SendThread(self.sock)
+		self.sendThread.start()
+		
+		# Register
+		nickname = settings["user"]
+		password = settings["pass"]
+		self.channels = settings["channels"]
+		if password: self.send("PASS " + password)
+		self.send("USER " + nickname + " 0 * :" + nickname + "_real")
+		self.send("NICK " + nickname)
 		
 	
 	def __enter__(self):
@@ -130,24 +134,8 @@ class Client:
 			self.process(self.receiverThread.queue.get())
 			
 	
-	def updateMessageTime(self):
-		curTime = time.perf_counter()
-		if (curTime - self.messageTime) >= 1.0:
-			self.messageTime = curTime
-			self.sentMessageCount = 0
-	
-	
 	def send(self, message):
-		# Wait until we can send a message
-		self.updateMessageTime()
-		
-		while self.sentMessageCount >= self.maxMessagesPerSecond:
-			time.sleep((1 + self.messageTime) - time.perf_counter())
-			self.updateMessageTime()
-		
-		print("SEND: " + message, end = Teebo.eol)
-		self.sentMessageCount += 1
-		self.sock.sendall(bytes(message + Teebo.eol, "utf-8"))
+		self.sendThread.queue.put(message)
 
 
 	def setMessageProcessors(self, command, func):
