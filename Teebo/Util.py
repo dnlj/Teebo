@@ -8,9 +8,8 @@ _logLock = threading.Lock()
 
 
 def log(*args, **kwargs):
-	_logLock.acquire()
-	print(*args, **kwargs)
-	_logLock.release()
+	with _logLock:
+		print(*args, **kwargs)
 	
 
 def getInfoFromPrefix(prefix):
