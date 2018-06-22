@@ -5,6 +5,8 @@ import traceback
 import time
 import urllib.request
 import json
+import threading
+import re
 
 
 class Client:
@@ -13,10 +15,26 @@ class Client:
 		self.registered = False
 		self.processors = {}
 		self.commands = {}
+		self.userListUpdateEvents = {}
+		self.userListLocks = {}
+		self.userLists = {}
+		self.channels = settings["channels"]
 		self.maxMessagesPerSecond = 20
 		self.sentMessageCount = 0
 		self.messageTime = time.perf_counter()
 		self.hostType = Teebo.HostType[settings["type"].upper()]
+		
+		# Create events
+		for chan in self.channels:
+			self.userListUpdateEvents[chan] = threading.Event()
+		
+		# Create locks
+		for chan in self.channels:
+			self.userListLocks[chan] = threading.Lock()
+			
+		# Create lists
+		for chan in self.channels:
+			self.userLists[chan] = []
 		
 		# Create our connection
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -44,7 +62,6 @@ class Client:
 		# Register
 		nickname = settings["user"]
 		password = settings["pass"]
-		self.channels = settings["channels"]
 		if password: self.send("PASS " + password)
 		self.send("USER " + nickname + " 0 * :" + nickname + "_real")
 		self.send("NICK " + nickname)
@@ -91,12 +108,16 @@ class Client:
 			
 	
 	def __messageProcessor_RPL_NAMES(self, message):
-		pass
+		chan = message.params[2]
+		users = re.findall(r"[^\s@\+]+", message.trailing)
+		with self.userListLocks[chan]:
+			self.userLists[chan].extend(users)
 		
 	
 	def __messageProcessor_RPL_ENDOFNAMES(self, message):
-		pass
-	
+		chan = message.params[1]
+		self.userListUpdateEvents[chan].set()
+		
 	
 	def onRegistered(self):
 		for channel in self.channels:
@@ -114,8 +135,19 @@ class Client:
 		userList = []
 		
 		if self.hostType == Teebo.HostType.IRC:
-			# TODO: Normal IRC support. Look into NAMES command.
-			pass
+			event = self.userListUpdateEvents[channel]
+			lock = self.userListLocks[channel]
+			
+			with lock:
+				self.userLists[channel].clear()
+			
+			event.clear()
+			self.send("NAMES " + channel)
+			event.wait()
+			
+			with lock:
+				userList.extend(self.userLists[channel])
+			
 		elif self.hostType == Teebo.HostType.TWITCH:
 			with urllib.request.urlopen("http://tmi.twitch.tv/group/user/" + channel[1:] + "/chatters") as con:
 				data = json.loads(con.read())["chatters"]
