@@ -2,9 +2,7 @@ import sys
 import json
 import Teebo
 import random
-
-
-#TODO: PASS support
+import threading
 
 
 ##############################################################################
@@ -51,6 +49,67 @@ def command_help(client, channel, user, cmd, args):
 		return args[0] + " - " +cmdData["help"]
 
 
+class Command_Lottery:
+	def __init__(self, client):
+		self.client = client
+		self.channels = {}
+		self.duration = 10
+		self.houseBet = 1000
+		self.houseUser = " @ h o u s e @ "
+		
+		# TODO: Add min number of unique users	
+		
+		for chan in client.channels:
+			self.resetLottery(chan)
+	
+	
+	def resetLottery(self, channel):
+		self.channels[channel] = {
+			"users": [self.houseUser],
+			"weights": [self.houseBet],
+			"thread": threading.Timer(self.duration, self.doLottery, [channel])
+		}
+	
+	
+	def doLottery(self, *args, **kwargs):
+		chan = args[0]
+		winner = random.choices(
+			self.channels[chan]["users"],
+			self.channels[chan]["weights"]
+		)[0]
+		
+		# TODO: Add points to user
+		# TODO: If house wins increase pot?
+		
+		if winner == self.houseUser:
+			self.client.send("PRIVMSG " + chan + " :Unfortunately the house has won the lottery. Better luck next time.")
+		else:
+			self.client.send("PRIVMSG " + chan + " :Congratulations to @" + winner + " for winning __ in the lottery")
+		
+		self.resetLottery(chan)
+	
+	
+	def __call__(self, client, channel, user, cmd, args):
+		if len(args) < 1: return
+		
+		count = args[0]
+		if count.isdigit():
+			count = int(count)
+			chanData = self.channels[channel]
+			
+			# TODO: Remove points from user
+			
+			chanData["users"].append(user)
+			chanData["weights"].append(count)
+			
+			if not chanData["thread"].is_alive():
+				chanData["thread"].start()
+			
+			return "Buy " + str(count) + " tickets"
+			
+		return "@" + user + " - Invalid input for command \"" + cmd + "\""
+
+
 def main():
 	Teebo.log("=== Teebo starting ===")
 	
@@ -71,6 +130,7 @@ def main():
 	
 	client.addCommand("!roll", command_roll, "Rolls N S sided dice. Ex: !roll 3d6")
 	client.addCommand("!help", command_help, "Gets the help text for a command. Ex: !help !roll")
+	client.addCommand("!lottery", Command_Lottery(client), "TODO: add help text")
 	
 	# Run the bot
 	client.run()
