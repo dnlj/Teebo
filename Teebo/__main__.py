@@ -57,7 +57,7 @@ class Command_Lottery:
 		self.houseBet = 1000
 		self.houseUser = " @ h o u s e @ "
 		
-		# TODO: Add min number of unique users	
+		# TODO: Add min number of unique users
 		
 		for chan in client.channels:
 			self.resetLottery(chan)
@@ -103,6 +103,7 @@ class Command_Lottery:
 			chanData["weights"].append(count)
 			
 			if not chanData["thread"].is_alive():
+				client.send("PRIVMSG " + channel + " :A new lottery has begun. Type !lottery {amount} to enter.")
 				chanData["thread"].start()
 			
 			return "Buy " + str(count) + " tickets"
