@@ -73,6 +73,24 @@ class PointsThread(threading.Thread):
 					})
 	
 	
+	def getPoints(self, channel, user):
+		user = user.lower()
+		channel = channel.lower()
+		
+		with sqlite3.connect(self.dbfile) as con:
+			with closing(con.cursor()) as cur:
+				cur.execute('''SELECT points FROM users_''' + self.channelIds[channel] + ''' WHERE username = :user''', {
+					"user": user,
+				})
+				
+				points = cur.fetchone()
+				
+				if points is None:
+					points = 0
+				
+				return points
+	
+	
 	def updatePoints(self):
 		if (self.pointInterval + self.pointTime) - time.perf_counter() > 0:
 			return
