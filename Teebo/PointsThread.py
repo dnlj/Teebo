@@ -84,9 +84,9 @@ class PointsThread(threading.Thread):
 				points = cur.fetchone()
 				
 				if points is None:
-					points = 0
-				
-				return points
+					return 0
+				else:
+					return points[0]
 	
 	
 	def updatePoints(self):
