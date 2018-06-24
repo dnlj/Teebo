@@ -32,6 +32,8 @@ class PointsThread(threading.Thread):
 	
 	
 	def setupChannel(self, cursor, channel):
+		channel = channel.lower()
+		
 		cursor.execute('''INSERT OR IGNORE INTO channels (channel) VALUES (:channel)''', {
 			"channel": channel,
 		})
@@ -52,6 +54,9 @@ class PointsThread(threading.Thread):
 	
 	
 	def addPoints(self, channel, user, amount):
+		user = user.lower()
+		channel = channel.lower()
+		
 		with sqlite3.connect(self.dbfile) as con:
 			with closing(con.cursor()) as cur:
 				cur.execute('''UPDATE users_''' + self.channelIds[channel] + ''' SET points = points + :amount WHERE username = :user''', {
