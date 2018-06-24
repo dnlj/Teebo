@@ -60,14 +60,12 @@ class PointsThread(threading.Thread):
 		with sqlite3.connect(self.dbfile) as con:
 			with closing(con.cursor()) as cur:
 				cur.execute('''UPDATE users_''' + self.channelIds[channel] + ''' SET points = points + :amount WHERE username = :user''', {
-					"table": "users_" + channel,
 					"user": user,
 					"amount": amount,
 				})
 
 				if cur.rowcount < 1:
 					cur.execute('''INSERT INTO users_''' + self.channelIds[channel] + ''' (username, points) VALUES (:user, :amount)''', {
-						"table": "users_" + channel,
 						"user": user,
 						"amount": amount,
 					})
