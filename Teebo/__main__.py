@@ -97,17 +97,18 @@ class Command_Lottery:
 			count = int(count)
 			chanData = self.channels[channel]
 			
-			# TODO: Remove points from user
-			
-			chanData["users"].append(user)
-			chanData["weights"].append(count)
-			
-			if not chanData["thread"].is_alive():
-				client.send("PRIVMSG " + channel + " :A new lottery has begun. Type !lottery {amount} to enter.")
-				chanData["thread"].start()
-			
-			return "Buy " + str(count) + " tickets"
-			
+			if client.pointsThread.checkAndRemovePoints(channel, user, count):
+				chanData["users"].append(user)
+				chanData["weights"].append(count)
+				
+				if not chanData["thread"].is_alive():
+					client.send("PRIVMSG " + channel + " :A new lottery has begun. Type !lottery {amount} to enter.")
+					chanData["thread"].start()
+				
+				return "Buy " + str(count) + " tickets"
+			else:
+				return "@" + user + " - Insufficient points"
+		
 		return "@" + user + " - Invalid input for command \"" + cmd + "\""
 
 

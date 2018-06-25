@@ -71,6 +71,24 @@ class PointsThread(threading.Thread):
 					})
 	
 	
+	def checkAndRemovePoints(self, channel, user, amount):
+		user = user.lower()
+		channel = channel.lower()
+		
+		with sqlite3.connect(self.dbfile) as con:
+			with closing(con.cursor()) as cur:
+				cur.execute(
+					''' UPDATE users_''' + self.channelIds[channel] +
+					''' SET points = points - :amount''' +
+					''' WHERE username = :user''' +
+					''' AND points >= :amount''', {
+					"user": user,
+					"amount": amount,
+				})
+				
+				return cur.rowcount >= 1
+	
+	
 	def getPoints(self, channel, user):
 		user = user.lower()
 		channel = channel.lower()
