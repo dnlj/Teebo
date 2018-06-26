@@ -67,7 +67,8 @@ class Command_Lottery:
 		self.channels[channel] = {
 			"users": [self.houseUser],
 			"weights": [self.houseBet],
-			"thread": threading.Timer(self.duration, self.doLottery, [channel])
+			"thread": threading.Timer(self.duration, self.doLottery, [channel]),
+			"pot": self.houseBet,
 		}
 	
 	
@@ -78,13 +79,14 @@ class Command_Lottery:
 			self.channels[chan]["weights"]
 		)[0]
 		
-		# TODO: Add points to user
 		# TODO: If house wins increase pot?
 		
 		if winner == self.houseUser:
 			self.client.send("PRIVMSG " + chan + " :Unfortunately the house has won the lottery. Better luck next time.")
 		else:
-			self.client.send("PRIVMSG " + chan + " :Congratulations to @" + winner + " for winning __ in the lottery")
+			pot = self.channels[chan]["pot"]
+			self.client.send("PRIVMSG " + chan + " :Congratulations to @" + winner + " for winning " + str(pot) + " in the lottery")
+			self.client.pointsThread.addPoints(chan, winner, pot)
 		
 		self.resetLottery(chan)
 	
@@ -100,12 +102,13 @@ class Command_Lottery:
 			if client.pointsThread.checkAndRemovePoints(channel, user, count):
 				chanData["users"].append(user)
 				chanData["weights"].append(count)
+				chanData["pot"] += count
 				
 				if not chanData["thread"].is_alive():
 					client.send("PRIVMSG " + channel + " :A new lottery has begun. Type !lottery {amount} to enter.")
 					chanData["thread"].start()
 				
-				return "Buy " + str(count) + " tickets"
+				return "@" + user + " has purchased " + str(count) + " tickets. Current pot is " + str(chanData["pot"])
 			else:
 				return "@" + user + " - Insufficient points"
 		
