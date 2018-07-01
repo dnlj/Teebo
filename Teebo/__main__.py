@@ -74,16 +74,18 @@ class Command_Lottery:
 	def doLottery(self, *args, **kwargs):
 		chan = args[0]
 		chanData = self.channels[chan]
+		users = chanData["users"]
+		weights = chanData["weights"]
 		
 		if len(set(chanData["users"])) < self.minUsers:
 			self.client.send("PRIVMSG " + chan + " :The lottery has been canceled. There must be at least " + str(self.minUsers) + " players.")
-			# TODO: Give users back points
+			
+			for user, weight in zip(users, weights):
+				self.client.pointsThread.addPoints(chan, user, weight)
+			
 			return
 		
-		winner = random.choices(
-			chanData["users"],
-			chanData["weights"]
-		)[0]
+		winner = random.choices(users, weights)[0]
 		
 		pot = chanData["pot"]
 		self.client.send("PRIVMSG " + chan + " :Congratulations to @" + winner + " for winning " + str(pot) + " in the lottery!")
