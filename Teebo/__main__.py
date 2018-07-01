@@ -70,32 +70,35 @@ class Command_Lottery:
 			"weights": [],
 			"thread": threading.Timer(self.duration, self.doLottery, [channel]),
 			"pot": 0,
+			"lock": threading.Lock()
 		}
 	
 	
 	def doLottery(self, *args, **kwargs):
 		chan = args[0]
 		chanData = self.channels[chan]
-		users = chanData["users"]
-		weights = chanData["weights"]
 		
-		if len(set(chanData["users"])) < self.minUsers:
-			self.client.send("PRIVMSG " + chan + " :The lottery has been canceled. There must be at least " + str(self.minUsers) + " players.")
+		with chanData["lock"]:
+			users = chanData["users"]
+			weights = chanData["weights"]
 			
-			for user, weight in zip(users, weights):
-				self.client.pointsThread.addPoints(chan, user, weight)
+			if len(set(chanData["users"])) < self.minUsers:
+				self.client.send("PRIVMSG " + chan + " :The lottery has been canceled. There must be at least " + str(self.minUsers) + " players.")
+				
+				for user, weight in zip(users, weights):
+					self.client.pointsThread.addPoints(chan, user, weight)
+				
+				self.resetLottery(chan)
+				
+				return
+			
+			winner = random.choices(users, weights)[0]
+			
+			pot = chanData["pot"]
+			self.client.send("PRIVMSG " + chan + " :Congratulations to @" + winner + " for winning " + str(pot) + " in the lottery!")
+			self.client.pointsThread.addPoints(chan, winner, pot)
 			
 			self.resetLottery(chan)
-			
-			return
-		
-		winner = random.choices(users, weights)[0]
-		
-		pot = chanData["pot"]
-		self.client.send("PRIVMSG " + chan + " :Congratulations to @" + winner + " for winning " + str(pot) + " in the lottery!")
-		self.client.pointsThread.addPoints(chan, winner, pot)
-		
-		self.resetLottery(chan)
 	
 	
 	def __call__(self, client, channel, user, cmd, args):
@@ -113,18 +116,19 @@ class Command_Lottery:
 		
 		chanData = self.channels[channel]
 		
-		if client.pointsThread.checkAndRemovePoints(channel, user, count):
-			chanData["users"].append(user)
-			chanData["weights"].append(count)
-			chanData["pot"] += count
-			
-			if not chanData["thread"].is_alive():
-				client.send("PRIVMSG " + channel + " :A new lottery has begun. Type !lottery {amount} to enter.")
-				chanData["thread"].start()
-			
-			return "@" + user + " has purchased " + str(count) + " tickets. Current pot is " + str(chanData["pot"])
-		else:
-			return "@" + user + " - Insufficient points"
+		with chanData["lock"]:
+			if client.pointsThread.checkAndRemovePoints(channel, user, count):
+				chanData["users"].append(user)
+				chanData["weights"].append(count)
+				chanData["pot"] += count
+				
+				if not chanData["thread"].is_alive():
+					client.send("PRIVMSG " + channel + " :A new lottery has begun. Type !lottery {amount} to enter.")
+					chanData["thread"].start()
+				
+				return "@" + user + " has purchased " + str(count) + " tickets. Current pot is " + str(chanData["pot"])
+			else:
+				return "@" + user + " - Insufficient points"
 
 
 def main():
