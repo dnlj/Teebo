@@ -50,12 +50,13 @@ def command_help(client, channel, user, cmd, args):
 
 
 class Command_Lottery:
-	def __init__(self, client):
+	def __init__(self, client, settings):
 		self.client = client
 		self.channels = {}
-		self.duration = 10
-		self.minUsers = 2
-		self.minBet = 10
+		
+		self.duration = settings["lottery"]["duration"]
+		self.minUsers = settings["lottery"]["minUsers"]
+		self.minBet = settings["lottery"]["minBet"]
 		
 		# TODO: Add cooldown between?
 		
@@ -144,7 +145,7 @@ def main():
 	
 	client.addCommand("!roll", command_roll, "Rolls N S sided dice. Ex: !roll 3d6")
 	client.addCommand("!help", command_help, "Gets the help text for a command. Ex: !help !roll")
-	client.addCommand("!lottery", Command_Lottery(client), "TODO: add help text")
+	client.addCommand("!lottery", Command_Lottery(client, settings), "TODO: add help text")
 	
 	# Run the bot
 	client.run()

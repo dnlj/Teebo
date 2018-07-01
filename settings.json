@@ -10,6 +10,11 @@
 		"#Test1",
 		"#Test2"
 	],
+	"lottery": {
+		"duration": 1,
+		"minUsers": 2,
+		"minBet": 10
+	},
 	"commands": [
 		{
 			"command": "!foo",
