@@ -54,9 +54,9 @@ class Command_Lottery:
 		self.client = client
 		self.channels = {}
 		self.duration = 10
-		self.houseBet = 1000
-		self.houseUser = " @ h o u s e @ "
-		self.minUsers = 3 # 2 + house
+		self.minUsers = 2
+		
+		# TODO: Add cooldown between?
 		
 		for chan in client.channels:
 			self.resetLottery(chan)
@@ -64,10 +64,10 @@ class Command_Lottery:
 	
 	def resetLottery(self, channel):
 		self.channels[channel] = {
-			"users": [self.houseUser],
-			"weights": [self.houseBet],
+			"users": [],
+			"weights": [],
 			"thread": threading.Timer(self.duration, self.doLottery, [channel]),
-			"pot": self.houseBet,
+			"pot": 0,
 		}
 	
 	
@@ -85,14 +85,9 @@ class Command_Lottery:
 			chanData["weights"]
 		)[0]
 		
-		# TODO: If house wins increase pot?
-		
-		if winner == self.houseUser:
-			self.client.send("PRIVMSG " + chan + " :Unfortunately the house has won the lottery. Better luck next time.")
-		else:
-			pot = chanData["pot"]
-			self.client.send("PRIVMSG " + chan + " :Congratulations to @" + winner + " for winning " + str(pot) + " in the lottery")
-			self.client.pointsThread.addPoints(chan, winner, pot)
+		pot = chanData["pot"]
+		self.client.send("PRIVMSG " + chan + " :Congratulations to @" + winner + " for winning " + str(pot) + " in the lottery!")
+		self.client.pointsThread.addPoints(chan, winner, pot)
 		
 		self.resetLottery(chan)
 	
