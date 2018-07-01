@@ -11,7 +11,7 @@
 		"#Test2"
 	],
 	"lottery": {
-		"duration": 1,
+		"duration": 5,
 		"minUsers": 2,
 		"minBet": 10
 	},

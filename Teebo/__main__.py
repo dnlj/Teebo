@@ -85,6 +85,8 @@ class Command_Lottery:
 			for user, weight in zip(users, weights):
 				self.client.pointsThread.addPoints(chan, user, weight)
 			
+			self.resetLottery(chan)
+			
 			return
 		
 		winner = random.choices(users, weights)[0]
