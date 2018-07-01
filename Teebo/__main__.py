@@ -56,8 +56,7 @@ class Command_Lottery:
 		self.duration = 10
 		self.houseBet = 1000
 		self.houseUser = " @ h o u s e @ "
-		
-		# TODO: Add min number of unique users
+		self.minUsers = 3 # 2 + house
 		
 		for chan in client.channels:
 			self.resetLottery(chan)
@@ -74,9 +73,16 @@ class Command_Lottery:
 	
 	def doLottery(self, *args, **kwargs):
 		chan = args[0]
+		chanData = self.channels[chan]
+		
+		if len(set(chanData["users"])) < self.minUsers:
+			self.client.send("PRIVMSG " + chan + " :The lottery has been canceled. There must be at least " + str(self.minUsers) + " players.")
+			# TODO: Give users back points
+			return
+		
 		winner = random.choices(
-			self.channels[chan]["users"],
-			self.channels[chan]["weights"]
+			chanData["users"],
+			chanData["weights"]
 		)[0]
 		
 		# TODO: If house wins increase pot?
@@ -84,7 +90,7 @@ class Command_Lottery:
 		if winner == self.houseUser:
 			self.client.send("PRIVMSG " + chan + " :Unfortunately the house has won the lottery. Better luck next time.")
 		else:
-			pot = self.channels[chan]["pot"]
+			pot = chanData["pot"]
 			self.client.send("PRIVMSG " + chan + " :Congratulations to @" + winner + " for winning " + str(pot) + " in the lottery")
 			self.client.pointsThread.addPoints(chan, winner, pot)
 		
