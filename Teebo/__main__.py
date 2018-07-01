@@ -55,6 +55,7 @@ class Command_Lottery:
 		self.channels = {}
 		self.duration = 10
 		self.minUsers = 2
+		self.minBet = 10
 		
 		# TODO: Add cooldown between?
 		
@@ -100,6 +101,10 @@ class Command_Lottery:
 		count = args[0]
 		if count.isdigit():
 			count = int(count)
+			
+			if count < self.minBet:
+				return "@" + user + " - Your bet must be at least " + str(self.minBet) + "."
+			
 			chanData = self.channels[channel]
 			
 			if client.pointsThread.checkAndRemovePoints(channel, user, count):
