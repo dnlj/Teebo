@@ -99,28 +99,29 @@ class Command_Lottery:
 		if len(args) < 1: return
 		
 		count = args[0]
-		if count.isdigit():
-			count = int(count)
-			
-			if count < self.minBet:
-				return "@" + user + " - Your bet must be at least " + str(self.minBet) + "."
-			
-			chanData = self.channels[channel]
-			
-			if client.pointsThread.checkAndRemovePoints(channel, user, count):
-				chanData["users"].append(user)
-				chanData["weights"].append(count)
-				chanData["pot"] += count
-				
-				if not chanData["thread"].is_alive():
-					client.send("PRIVMSG " + channel + " :A new lottery has begun. Type !lottery {amount} to enter.")
-					chanData["thread"].start()
-				
-				return "@" + user + " has purchased " + str(count) + " tickets. Current pot is " + str(chanData["pot"])
-			else:
-				return "@" + user + " - Insufficient points"
 		
-		return "@" + user + " - Invalid input for command \"" + cmd + "\""
+		if not count.isdigit():
+			return "@" + user + " - Invalid input for command \"" + cmd + "\""
+			
+		count = int(count)
+		
+		if count < self.minBet:
+			return "@" + user + " - Your bet must be at least " + str(self.minBet) + "."
+		
+		chanData = self.channels[channel]
+		
+		if client.pointsThread.checkAndRemovePoints(channel, user, count):
+			chanData["users"].append(user)
+			chanData["weights"].append(count)
+			chanData["pot"] += count
+			
+			if not chanData["thread"].is_alive():
+				client.send("PRIVMSG " + channel + " :A new lottery has begun. Type !lottery {amount} to enter.")
+				chanData["thread"].start()
+			
+			return "@" + user + " has purchased " + str(count) + " tickets. Current pot is " + str(chanData["pot"])
+		else:
+			return "@" + user + " - Insufficient points"
 
 
 def main():
